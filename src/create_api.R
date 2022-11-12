@@ -154,7 +154,7 @@ get_table <- function(foodlink){
   }
   
   #calculation
-  x <- 1
+  """x <- 1
   for (quant in ing_name$Quantity) {
     if (str_detect(quant, "-") == TRUE) {
       quant <- eval(parse(text=quant))
@@ -163,7 +163,7 @@ get_table <- function(foodlink){
     ing_name$CO2_Score[x] <- CO2
     x <- x + 1
   }
-  
+  """
   sumco2 <-sum(as.numeric(ing_name$CO2))
   
   dbDisconnect(db)
