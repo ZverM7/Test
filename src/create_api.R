@@ -8,8 +8,6 @@
 #* @response sumco2
 
 get_table <- function(foodlink){
-
-  foodlink <- foodlink
   
   #packages to load
 library(readr)
