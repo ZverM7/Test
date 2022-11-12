@@ -9,6 +9,8 @@
 
 get_table <- function(foodlink){
   
+  foodlink = foodlink
+  
   #packages to load
 library(readr)
 library(rvest)
