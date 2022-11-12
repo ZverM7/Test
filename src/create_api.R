@@ -5,7 +5,7 @@
 
 #* @get /get_table
 #* @param foodlink
-#* @response sumco2
+#* @response result
 
 get_table <- function(foodlink){
   
@@ -154,7 +154,8 @@ get_table <- function(foodlink){
   }
   
  
-  sumco2 <-sum(as.numeric(ing_name$CO2))
+  sumco2 <- sum(as.numeric(ing_name$CO2))
+  result <- print(sumco2)
   
   dbDisconnect(db)
   
