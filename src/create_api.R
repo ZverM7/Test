@@ -153,7 +153,7 @@ get_table <- function(foodlink){
   }
   
  
-  sumco2 <- sum(as.numeric(ing_name$CO2))
+  sumco2 <- as.numeric(sum(as.numeric(ing_name$CO2)))
   foodlink <- sumco2
   
   
