@@ -154,9 +154,9 @@ get_table <- function(foodlink){
   
  
   sumco2 <- sum(as.numeric(ing_name$CO2))
-  result <- sumco2
+  foodlink <- sumco2
   
-  result
+  
   
   dbDisconnect(db)
   
