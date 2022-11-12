@@ -7,7 +7,7 @@
 #* @param foodlink
 #* @response sumco2
 
-get_table <-- function(foodlink){
+get_table <- function(foodlink){
 
   foodlink <- foodlink
   
