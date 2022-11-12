@@ -9,17 +9,16 @@
 
 get_table <- function(foodlink){
   
-  foodlink = toString(foodlink)
-  
   #packages to load
-library(readr)
-library(rvest)
-library(stringr)
-library(tidyverse)
-library(data.table)
-library(DBI)
-library(jsonlite)
-library(stringdist)
+  library(readr)
+  library(rvest)
+  library(stringr)
+  library(tidyverse)
+  library(data.table)
+  library(DBI)
+  library(jsonlite)
+  library(stringdist)
+  
   #open connection
   ip <- "35.228.124.55"
   db_name <- "postgres"
