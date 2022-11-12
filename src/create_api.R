@@ -5,7 +5,7 @@
 
 #* @get /get_table
 #* @param foodlink
-#* @response result
+#* @response ing_name
 
 get_table <- function(foodlink){
   
