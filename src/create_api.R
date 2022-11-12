@@ -153,17 +153,7 @@ get_table <- function(foodlink){
     x <- x + 1
   }
   
-  #calculation
-  """x <- 1
-  for (quant in ing_name$Quantity) {
-    if (str_detect(quant, "-") == TRUE) {
-      quant <- eval(parse(text=quant))
-    }
-    CO2 <- (strtoi(ing_name$CO2[x], base=16) / ing_name$Conversion[x]) * ing_name$Quantity[x]
-    ing_name$CO2_Score[x] <- CO2
-    x <- x + 1
-  }
-  """
+ 
   sumco2 <-sum(as.numeric(ing_name$CO2))
   
   dbDisconnect(db)
