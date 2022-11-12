@@ -9,7 +9,7 @@
 
 get_table <- function(foodlink){
   
-  foodlink = foodlink
+  foodlink = toString(foodlink)
   
   #packages to load
 library(readr)
