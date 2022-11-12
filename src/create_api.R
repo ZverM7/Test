@@ -157,9 +157,6 @@ get_table <- function(foodlink){
   result <- sumco2
   
   
-  
-  dbDisconnect(db)
-  
 }
 
 
