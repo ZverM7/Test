@@ -110,7 +110,6 @@ get_table <- function(foodlink){
   for (row in ing_name$Ingredient){
     row <- as.list(row)
     test_ing <- amatch(row, emissions_data$ingredient, maxDist = 0.5, method = "cosine")
-    print(test_ing)
     for (words in test_ing){
       if (is.na(words) == FALSE) {
       ing_name$Ingredient_parsed[x] <- emissions_data$ingredient[words]
@@ -154,8 +153,9 @@ get_table <- function(foodlink){
   }
   
  
-  result <- print(ing_name$CO2)
-  
+  sumco2 <- sum(as.numeric(ing_name$CO2))
+  result <- print(sumco2)
+  return result
   dbDisconnect(db)
   
 }
