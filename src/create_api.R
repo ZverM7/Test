@@ -5,7 +5,7 @@
 
 #* @get /get_table
 #* @param foodlink
-#* @response sum
+#* @response print result
 
 #packages to load
 library(readr)
