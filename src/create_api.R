@@ -5,35 +5,35 @@
 
 #* @get /get_table
 #* @param foodlink
-#* @response print result
+#* @response sum
+
+#packages to load
+library(readr)
+library(rvest)
+library(stringr)
+library(tidyverse)
+library(data.table)
+library(DBI)
+library(jsonlite)
+library(stringdist)
 
 get_table <- function(foodlink){
-  
-  #packages to load
-  library(readr)
-  library(rvest)
-  library(stringr)
-  library(tidyverse)
-  library(data.table)
-  library(DBI)
-  library(jsonlite)
-  library(stringdist)
-  
+
   #open connection
   ip <- "35.228.124.55"
   db_name <- "postgres"
   user <- "team"
   pwd <- "pdsp22"
+
+   #Connection Setup
+   db <- DBI::dbConnect(RPostgres::Postgres(),
+                        dbname = db_name,
+                        host = ip,
+                        port = 5432,
+                        user = user,
+                        password = pwd)
   
-  #Connection Setup
-  db <- DBI::dbConnect(RPostgres::Postgres(),
-                       dbname = db_name,
-                       host = ip,
-                       port = 5432,
-                       user = user,
-                       password = pwd)
-  
-  #load tables
+  # #load tables
   emissions_data <- dbReadTable(db, "emissions_data")
   cooking_vocab_data <- dbReadTable(db, "cooking_vocab")
   cooking_units_data <- data.table(dbReadTable(db, "cooking_units"))
@@ -59,17 +59,16 @@ get_table <- function(foodlink){
     str_squish() %>%
     data.table()
   
-  
-  #Clean the quantity
+  #Cleaning
   ing_quant <- ing_quant %>%
     rename("Quantity" = ".")
   
-  #Separate the measurements
   ing_name <- ing_name %>%
     rename("Ingredient" = ".")
   
   ing_name$Quantity <- ing_quant$Quantity
   
+  #Measurements
   x <- 1
   for (row in ing_name$Ingredient) {
     measur <- str_extract(row, "(\\w+)")
@@ -82,26 +81,58 @@ get_table <- function(foodlink){
    x <- x + 1
   }
   
-  ing_name$Ingredient <- ing_name$Ingredient %>%
-    trimws(which = "both") %>%
-    str_squish() 
-  
-  #add kg converter 
-  cooking_units_data$KG <- c(39.37007874, 39.37007874, 1, 1, 1, 1,1,1,1000,1000,1000,1000,1,1,1,1,1,1,1,1,2,1000000,1000000, 1000000,1000000,1000000,35.27336861,35.27336861,35.27336861,2,2,1,1,1,1,1,1,4.2268,415.54,100,4.2268,4.2268,2500,10,10,10,10,10,33.8140227,2.11,1.0567,33.8140227,0.26,0.26,0.26,9.92063,26.45503,1,1,1000,1,2795.56,2795.56,2.113376419,2.113376419,2.113376419,0.01,1.1,0.001,67.6280454,67.6280454,67.6280454,67.6280454,67.6280454,202.8841362,202.8841362,202.8841362,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1000,1000,1000,1.1,2500,1,1,1,1,1, 1,117.65, 117.65, 1000, 1000, 1000, 1000, 1, 1, 1, 1, 2.20462,1,1,1,1,1,1,1,1,1,1,1, 20000,20000, 1,1, 1, 1, 1)
-  
   #White spaces
   ing_name$Ingredient <- ing_name$Ingredient %>%
     trimws(which = "both") %>%
     str_squish() %>%
     tolower()
   
+  #add kg converter 
+  cooking_units_data$KG <- c(39.37007874, 39.37007874, 1, 1, 1, 1,1,1,1000,1000,1000,1000,1,1,1,1,1,1,1,1,2,1000000,1000000, 1000000,1000000,1000000,35.27336861,35.27336861,35.27336861,2,2,1,1,1,1,1,1,4.2268,415.54,100,4.2268,4.2268,2500,10,10,10,10,10,33.8140227,2.11,1.0567,33.8140227,0.26,0.26,0.26,9.92063,26.45503,1,1,1000,1,2795.56,2795.56,2.113376419,2.113376419,2.113376419,0.01,1.1,0.001,67.6280454,67.6280454,67.6280454,67.6280454,67.6280454,202.8841362,202.8841362,202.8841362,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1000,1000,1000,1.1,2500,1,1,1,1,1, 1,117.65, 117.65, 1000, 1000, 1000, 1000, 1, 1, 1, 1, 2.20462,1,1,1,1,1,1,1,1,1,1,1, 20000,20000, 1,1, 1, 1, 1)
+  
   #eliminate vocab
   x <- 1
   for (row in ing_name$Ingredient) {
     row <- gsub("\\s*\\([^\\)]+\\)", "", row)
+    row <- str_replace(row, "-", " ")
+    row <- str_replace(row, ",", "")
+    row <- str_squish(row)
+    row <- gsub(" or .*","", row)
+    
+    for (word in cooking_vocab_data$name){
+      if(str_detect(row, word) == TRUE) {
+        row <- str_replace(row, word, "")
+        
+      }
+    }
+    
     ing_name$Ingredient[x] <- row
     x <- x + 1
   }
+  
+  #White spaces
+  ing_name$Ingredient <- ing_name$Ingredient %>%
+    trimws(which = "both") %>%
+    str_squish() %>%
+    tolower()
+  # x <- 1
+  # for (row in ing_name$Ingredient){
+  #   for (word in plurals_en$source) {
+  #     if(str_detect(row, word) == TRUE) {
+  #       
+  #       replacement <- plurals_en$source %>%
+  #         filter(word) %>%
+  #         select(target)$
+  #       
+  #       row <- str_replace(row, word, replacement)
+  #         
+  #       } else {
+  #       row <- row
+  #       }
+  #     ing_name$Ingredient[x] <- row
+  #     x <- x + 1
+  # }
+  # }
   
   ing_name$Ingredient_parsed <- " "
   
@@ -109,7 +140,7 @@ get_table <- function(foodlink){
   x <- 1
   for (row in ing_name$Ingredient){
     row <- as.list(row)
-    test_ing <- amatch(row, emissions_data$ingredient, maxDist = 0.5, method = "cosine")
+    test_ing <- amatch(row, emissions_data$ingredient, maxDist = 0.1, method = "cosine")
     for (words in test_ing){
       if (is.na(words) == FALSE) {
       ing_name$Ingredient_parsed[x] <- emissions_data$ingredient[words]
@@ -124,7 +155,7 @@ get_table <- function(foodlink){
       #add emission
       ing_name$CO2[x] <- emissions_data %>%
         filter(ingredient == row) %>%
-        select(emissions)
+        summarize(mean(emissions)) 
       #add variety
       ing_name$Variety[x] <- emissions_data %>%
         filter(ingredient == row) %>%
@@ -151,14 +182,62 @@ get_table <- function(foodlink){
     }
     x <- x + 1
   }
-  
+
+  #cleaning quantities
+  suppressWarnings({
+  x <- 1
+  for (quant in ing_name$Quantity){
+    
+    if (quant == ""){
+      ing_name$Quantity[x] <- 1
+    }
  
-  sumco2 <- as.numeric(sum(as.numeric(ing_name$CO2)))
-  result <- sumco2
+    if (is.na(as.numeric(quant)) == TRUE){
+      ing_name$Quantity[x] <- str_split(quant," ") 
+    } else {
+      ing_name$Quantity[x] <- quant
+    }
+    
+    if (is.na(as.numeric(quant)) == FALSE) {
+      ing_name$Quantity[x] <- as.numeric(quant)
+    } else {
+      ing_name$Quantity[x] <- quant
+    }
   
+    if (str_detect(quant, "1⁄4") == TRUE){
+      ing_name$Quantity[x] <- 0.25
+    }
   
+    if (str_detect(quant, "1⁄2") == TRUE){
+      ing_name$Quantity[x] <- 0.5
+    }
+    
+    if (str_detect(quant, "2⁄3") == TRUE){
+      ing_name$Quantity[x] <- 0.66
+    }
+  
+    if (str_detect(quant, "3⁄4") == TRUE){
+      ing_name$Quantity[x] <- 0.75
+    }
+    
+    if (str_detect(quant, "1⁄8") == TRUE){
+      ing_name$Quantity[x] <- 0.125
+    }
+    
+    if (str_detect(quant, "1⁄3") == TRUE){
+      ing_name$Quantity[x] <- 0.33
+    }
+    x <- x + 1
+  }
+  
+  x <- 1
+  for (row in ing_name$Conversion){
+    ing_name$CO2_Calculated[x] <- (as.numeric(ing_name$CO2[x])/as.numeric(row))*as.numeric(ing_name$Quantity[x])
+    x <- x + 1
+  }
+  })
+  
+  result <- sum(as.numeric(ing_name$CO2_Calculated), na.rm=TRUE)
 }
 
-
-#empty
 
