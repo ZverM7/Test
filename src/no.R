@@ -1,24 +1,24 @@
-# script name: 
+# script name: Score_function
 # plumber_example.R
 
 # Define API
 
-#* @get /get_table
+#* @get /get_score
 #* @param foodlink
 #* @response print result
 
+#packages to load
+library(readr)
+library(rvest)
+library(stringr)
+library(tidyverse)
+library(data.table)
+library(DBI)
+library(jsonlite)
+library(stringdist)
+
 get_table <- function(foodlink){
 
-  #packages to load
-  library(readr)
-  library(rvest)
-  library(stringr)
-  library(tidyverse)
-  library(data.table)
-  library(DBI)
-  library(jsonlite)
-  library(stringdist)
-  
   #open connection
   ip <- "35.228.124.55"
   db_name <- "postgres"
@@ -32,8 +32,8 @@ get_table <- function(foodlink){
                         port = 5432,
                         user = user,
                         password = pwd)
-  
-  # #load tables
+
+  #load tables
   emissions_data <- dbReadTable(db, "emissions_data")
   cooking_vocab_data <- dbReadTable(db, "cooking_vocab")
   cooking_units_data <- data.table(dbReadTable(db, "cooking_units"))
@@ -76,7 +76,7 @@ get_table <- function(foodlink){
       ing_name$Measurement[x] <- measur
       ing_name$Ingredient[x] <- str_remove(ing_name$Ingredient[x], measur)
     } else {
-      ing_name$Measurement[x] <- 1
+      ing_name$Measurement[x] <- 0.1
     }
    x <- x + 1
   }
@@ -90,23 +90,31 @@ get_table <- function(foodlink){
   #add kg converter 
   cooking_units_data$KG <- c(39.37007874, 39.37007874, 1, 1, 1, 1,1,1,1000,1000,1000,1000,1,1,1,1,1,1,1,1,2,1000000,1000000, 1000000,1000000,1000000,35.27336861,35.27336861,35.27336861,2,2,1,1,1,1,1,1,4.2268,415.54,100,4.2268,4.2268,2500,10,10,10,10,10,33.8140227,2.11,1.0567,33.8140227,0.26,0.26,0.26,9.92063,26.45503,1,1,1000,1,2795.56,2795.56,2.113376419,2.113376419,2.113376419,0.01,1.1,0.001,67.6280454,67.6280454,67.6280454,67.6280454,67.6280454,202.8841362,202.8841362,202.8841362,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1000,1000,1000,1.1,2500,1,1,1,1,1, 1,117.65, 117.65, 1000, 1000, 1000, 1000, 1, 1, 1, 1, 2.20462,1,1,1,1,1,1,1,1,1,1,1, 20000,20000, 1,1, 1, 1, 1)
   
-  #eliminate vocab
+  #cleaning
   x <- 1
-  for (row in ing_name$Ingredient) {
+  for (row in ing_name$Ingredient){
     row <- gsub("\\s*\\([^\\)]+\\)", "", row)
     row <- str_replace(row, "-", " ")
     row <- str_replace(row, ",", "")
     row <- str_squish(row)
     row <- gsub(" or .*","", row)
-    
-    for (word in cooking_vocab_data$name){
-      if(str_detect(row, word) == TRUE) {
-        row <- str_replace(row, word, "")
-        
+    row <- str_split(row, " ")
+    ing_name$Ingredient[x] <- row
+    x <- x + 1
+  }
+  
+  #eliminate vocab
+  x <- 1
+  for (row in ing_name$Ingredient) {
+    cleaned_str <- row
+    for (word in row){
+      if (word %in% cooking_vocab_data$name){
+        cleaned_str <- cleaned_str[!cleaned_str == word]
       }
     }
     
-    ing_name$Ingredient[x] <- row
+    cleaned_str <- paste(cleaned_str, collapse=" ")
+    ing_name$Ingredient[x] <- cleaned_str
     x <- x + 1
   }
   
@@ -115,25 +123,48 @@ get_table <- function(foodlink){
     trimws(which = "both") %>%
     str_squish() %>%
     tolower()
-  # x <- 1
-  # for (row in ing_name$Ingredient){
-  #   for (word in plurals_en$source) {
-  #     if(str_detect(row, word) == TRUE) {
-  #       
-  #       replacement <- plurals_en$source %>%
-  #         filter(word) %>%
-  #         select(target)$
-  #       
-  #       row <- str_replace(row, word, replacement)
-  #         
-  #       } else {
-  #       row <- row
-  #       }
-  #     ing_name$Ingredient[x] <- row
-  #     x <- x + 1
-  # }
-  # }
   
+  
+  
+  x <- 1
+  for (row in ing_name$Ingredient){
+
+    for (word in plurals_en$source) {
+      if (str_detect(row, word) == TRUE) {
+        replacement <- plurals_en %>%
+          filter(source == word) %>%
+          select(target)
+
+        replacement <- as.character(replacement)
+        row <- str_replace(row, word, replacement)
+        } else {
+        row <- row
+        }
+    }
+    ing_name$Ingredient[x] <- row
+    x <- x + 1
+  }
+
+  x <- 1
+  for (row in ing_name$Ingredient){
+
+    for (word in synonyms_data$source) {
+      if (str_detect(row, word) == TRUE) {
+        replacement <- synonyms_data %>%
+          filter(source == word) %>%
+          select(target)
+
+        replacement <- as.character(replacement)
+        row <- str_replace(row, word, replacement)
+      } else {
+        row <- row
+      }
+    }
+    ing_name$Ingredient[x] <- row
+    x <- x + 1
+  }
+
+
   ing_name$Ingredient_parsed <- " "
   
   #find the ingredients from the file
@@ -227,6 +258,11 @@ get_table <- function(foodlink){
     if (str_detect(quant, "1⁄3") == TRUE){
       ing_name$Quantity[x] <- 0.33
     }
+    
+    if (str_detect(quant, "-") == TRUE){
+      quant <- gsub(" -.*","", quant)
+      ing_name$Quantity[x] <- quant
+    }
     x <- x + 1
   }
   
@@ -235,9 +271,18 @@ get_table <- function(foodlink){
     ing_name$CO2_Calculated[x] <- (as.numeric(ing_name$CO2[x])/as.numeric(row))*as.numeric(ing_name$Quantity[x])
     x <- x + 1
   }
+  
+  is.na(ing_name$CO2_Calculated[12])
+  x <- 1
+  for (row in ing_name$CO2_Calculated){
+    if (is.na(row) == TRUE){
+      ing_name$CO2_Calculated[x] <- (as.numeric(ing_name$CO2[x])/as.numeric(ing_name$Conversion[x])*0.1)
+    }
+    x <- x + 1
+  }
   })
   
-  result <- sum(as.numeric(ing_name$CO2_Calculated), na.rm=TRUE)
+  result <- (sum(as.numeric(ing_name$CO2_Calculated), na.rm=TRUE))
 }
 
 
