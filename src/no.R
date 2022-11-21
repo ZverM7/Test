@@ -7,18 +7,18 @@
 #* @param foodlink
 #* @response print result
 
-#packages to load
-library(readr)
-library(rvest)
-library(stringr)
-library(tidyverse)
-library(data.table)
-library(DBI)
-library(jsonlite)
-library(stringdist)
-
 get_table <- function(foodlink){
 
+  #packages to load
+  library(readr)
+  library(rvest)
+  library(stringr)
+  library(tidyverse)
+  library(data.table)
+  library(DBI)
+  library(jsonlite)
+  library(stringdist)
+  
   #open connection
   ip <- "35.228.124.55"
   db_name <- "postgres"
