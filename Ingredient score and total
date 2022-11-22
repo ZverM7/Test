@@ -1,0 +1,42 @@
+#-------------------------------code with ingredient, unit, quantity------------
+
+#A few premises
+
+#In this section we will calculate the score for each ingredient that we will be
+#having as an input written directly from the user
+
+#df: name of the data table
+
+
+#1: Make sure it is changed into integer
+quantityin <- as.integer(quantityin)
+
+#2:Calculate the CO2 score
+#Selected is the row that finds a correspondence in the data-set based on the ingredient name and so on
+#selected[,3] is the selection of the row 3, where the CO2 score is --> is it really on the third row? Or did something change
+#textin, quantityin, unitin (names of the inputs)
+
+selected1 <- df[df[,"ingredient"]==textin & df[,"unit"]==unitin,]
+selected1[,3]
+
+#3: Print the CO2 score
+CO2score.output1<-selected[,3]*quantityin
+
+
+
+#Has to be done for each line: CO2score.output2, CO2score.output3, ...
+#Concerns:
+- quantity measure
+- Say something if one space is blank (my idea: if (length(textin) != 0 & length(unitin) == 0 || length(quantityin) == 0 {statement}
+
+
+
+#-----------------------Total score---------------------------------------------
+#A few premises
+
+#Here we will have to calculate the total CO2 score for the recipe
+
+#CO2score.output is the output's score found for each ingredient
+#we sum them into TotalCO2score
+
+TotalCO2score = sum(CO2score.output1, CO2score.output2, CO2score.output3, CO2score.output4)
