@@ -1,7 +1,9 @@
 #Learn more page
 
 #* Find the CO2 for the ingredient
-#* @param ingredient the ingredient to search for
+#* @param ingredient
+#* @param variety
+#* @param certification
 #* @get /ing_co2
 #* @response print learnmoreC02
 
