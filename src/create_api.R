@@ -330,7 +330,8 @@ get_co2 <- function(ingredient, variety, certification) {
   
   learnmore <- emissions_data[emissions_data[,"ingredient"]==ingredient & emissions_data[,"variety"]==variety & emissions_data[,"certification"]==certification,]
   
-  learnmoreCO2<-learnmore[,3]
+  learnmoreCO2 <- learnmore %>%
+    select(emissions)
   
 }
 
