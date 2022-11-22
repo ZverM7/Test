@@ -11,7 +11,6 @@
 # sourcing necessary files ----
 source("src/config.R")
 source("src/create_api.R")
-source("src/learn_more.R")
 
 # install necessary packages --- it would be better to create a function
 library(plumber)
