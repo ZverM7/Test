@@ -299,12 +299,12 @@ get_table <- function(foodlink){
 ################################################################################################################################################
 
 #* Find the CO2 for the ingredient
-#* @param ingredient
+#* @param ing_lm
 #* @get /ing_co2
 #* @response print learnmoreC02
 
 
-get_co2 <- function(ingredient) {
+get_co2 <- function(ing_lm) {
   
   #packages to load
   library(readr)
@@ -337,11 +337,13 @@ get_co2 <- function(ingredient) {
   plurals_en <- data.table(dbReadTable(db, "plurals"))
   recipes_data <- data.table(dbReadTable(db, "recipes_data"))
   synonyms_data <- data.table(dbReadTable(db, "synonyms_data"))
-    
-  learnmoreCO2 <- emissions_data %>%
-    filter("ingredient" == ingredient)
   
+  learnmoreCO2 <- emissions_data %>%
+    filter(ingredient == ing_lm)
+  
+    
 }
+
 
 ################################################################################################################################################
 ################################################################################################################################################
