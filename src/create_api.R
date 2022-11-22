@@ -339,7 +339,7 @@ get_co2 <- function(ingredient) {
   synonyms_data <- data.table(dbReadTable(db, "synonyms_data"))
     
   learnmoreCO2 <- emissions_data %>%
-    filter(ingredient)
+    filter("ingredient" == ingredient)
   
 }
 
