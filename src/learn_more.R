@@ -47,3 +47,5 @@ get_co2 <- function(ingredient, variety, certification) {
   learnmoreCO2<-learnmore[,3]
   
 }
+
+##
