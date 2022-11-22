@@ -18,6 +18,7 @@ library(plumber)
 
 # running the back-end (APIs) ---
 r <- plumb("src/create_api.R")
+r <- plumb("src/learn_more.R")
 # Where 'plumber.R' is the location of the file shown above
 
 # Run r on port 8000
