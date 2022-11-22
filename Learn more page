@@ -1,0 +1,71 @@
+#Section 1: Discover more about food emissions
+
+#First part
+#They choose the ingredient, variety and certification
+#As an output we have the CO2 score
+#--> same here is the CO2 score on the third column in the data set?
+
+learnmore <- df[df[,"ingredient"]==textinR & df[,"variety"]==varietyR & df[,"certification"]==certificationR,]
+learnmoreCO2<-learnmore[,3]
+
+
+#Second part
+#Here is about the graphic visualization of the CO2 score based on variety and certification
+#Take as an input the ingredient and give the percentage of each variety and certification as an output
+
+#First: variety (canned, frozen, fresh, dry, glass)
+
+#Calculate the CO2 score for each variety of that specific/selected ingredient
+
+#canned
+canned <- df[df[,"ingredient"]==textinR & df[,"variety"]=="canned"]
+cannedCO2<-canned[,3]
+
+#frozen
+frozen <- df[df[,"ingredient"]==textinR & df[,"variety"]=="frozen"]
+frozenCO2<-frozen[,3]
+
+#fresh
+fresh <- df[df[,"ingredient"]==textinR & df[,"variety"]=="fresh"]
+freshCO2<-fresh[,3]
+
+#dry
+dry <- df[df[,"ingredient"]==textinR & df[,"variety"]=="dry"]
+dryCO2<-dry[,3]
+
+#glass
+glass <- df[df[,"ingredient"]==textinR & df[,"variety"]=="glass"]
+glassCO2<-glass[,3]
+
+#Calculate the percentages of each variety
+TotalevarietyCO2<-sum(cannedCO2, frozenCO2, freshCO2, dryCO2, glassCO2)
+
+perccanned<-cannedCO2/TotalevarietyCO2*100
+percfresh<-freshCO2/TotalevarietyCO2*100
+percfrozen<-frozenCO2/TotalevarietyCO2*100
+percdry<-dryCO2/TotalevarietyCO2*100
+percglass<-glassCO2/TotalevarietyCO2*100
+
+#Second: certification (organic, conventional, swiss integrated production)
+
+#Calculate the CO2 score for each certification of that specific/selected ingredient
+
+#canned
+organic <- df[df[,"ingredient"]==textinR & df[,"certification"]=="organic"]
+organicCO2<-organic[,3]
+
+#conventional
+conventional <- df[df[,"ingredient"]==textinR & df[,"certificaiton"]=="conventional"]
+conventionalCO2<-conventional[,3]
+
+#swiss integrated production
+swissip <- df[df[,"ingredient"]==textinR & df[,"certification"]=="swissip"]
+swissipCO2<-swissip[,3]
+
+
+#Calculate the percentages of each certification
+TotalcertificationCO2<-sum(organicCO2, conventionalCO2, swissipCO2)
+
+perorganic<-organicCO2/TotalcertificationCO2*100
+percconventional<-conventionalCO2/TotalcertificationCO2*100
+percswissip<-swissipCO2/TotalcertificationCO2*100
