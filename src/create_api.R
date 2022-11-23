@@ -364,6 +364,15 @@ get_co2 <- function(ing_lm) {
 
 webtable <- function(list_ing, list_quant, list_meas) {
   
+  library(readr)
+  library(rvest)
+  library(stringr)
+  library(tidyverse)
+  library(data.table)
+  library(DBI)
+  library(jsonlite)
+  library(stringdist)
+  
   #open connection
   ip <- "35.228.124.55"
   db_name <- "postgres"
