@@ -298,13 +298,15 @@ get_table <- function(foodlink){
 ################################################################################################################################################
 ################################################################################################################################################
 
+#Learn more page
+
 #* Find the CO2 for the ingredient
-#* @param ing_lm
-#* @get /ing_co2
-#* @response print learnmoreC02
+#* @param dash_ing the ingredient to search for
+#* @get /dash_info
+#* @response print learnmore
 
 
-get_co2 <- function(ing_lm) {
+get_co2 <- function(dash_ing) {
   
   #packages to load
   library(readr)
@@ -316,12 +318,13 @@ get_co2 <- function(ing_lm) {
   library(jsonlite)
   library(stringdist)
   
+  
   #open connection
   ip <- "35.228.124.55"
   db_name <- "postgres"
   user <- "team"
   pwd <- "pdsp22"
-  
+
   #Connection Setup
   db <- DBI::dbConnect(RPostgres::Postgres(),
                        dbname = db_name,
@@ -329,7 +332,7 @@ get_co2 <- function(ing_lm) {
                        port = 5432,
                        user = user,
                        password = pwd)
-  
+
   #load tables
   emissions_data <- dbReadTable(db, "emissions_data")
   cooking_vocab_data <- dbReadTable(db, "cooking_vocab")
@@ -338,10 +341,9 @@ get_co2 <- function(ing_lm) {
   recipes_data <- data.table(dbReadTable(db, "recipes_data"))
   synonyms_data <- data.table(dbReadTable(db, "synonyms_data"))
   
-  learnmoreCO2 <- emissions_data %>%
-    filter(ingredient == ing_lm)
+  learnmore <- emissions_data %>%
+    filter(ingredient == dash_ing)
   
-    
 }
 
 
