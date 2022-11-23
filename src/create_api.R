@@ -357,11 +357,12 @@ get_co2 <- function(ing_lm) {
 # Define API
 
 #* @get /get_score_manual
-#* @param webtable
+#* @param list_ing
+#* @param list_quant
+#* @param list_meas
 #* @response print result
 
-
-webtable <- function(webtable) {
+webtable <- function(list_ing, list_quant, list_meas) {
   
   #open connection
   ip <- "35.228.124.55"
@@ -384,6 +385,13 @@ webtable <- function(webtable) {
   plurals_en <- data.table(dbReadTable(db, "plurals"))
   recipes_data <- data.table(dbReadTable(db, "recipes_data"))
   synonyms_data <- data.table(dbReadTable(db, "synonyms_data"))
+  
+  Ingredients <- list_ing
+  Quantity <- list_quant
+  Unit <- list_meas
+  
+  webtable <- data.frame(Ingredients, Quantity, Unit)
+  print(webtable)
   
   webtable$Ingredient_parsed <- " "
   
@@ -451,8 +459,9 @@ webtable <- function(webtable) {
     x <- x + 1
   }
 })
-  
-result <- (sum(as.numeric(webtable$CO2_Calculated), na.rm=TRUE))
+
+  print(webtable)
+  result <- (sum(as.numeric(webtable$CO2_Calculated), na.rm=TRUE))
 
 }
 
