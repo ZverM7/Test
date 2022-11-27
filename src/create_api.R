@@ -63,8 +63,6 @@ get_table <- function(foodlink){
     Score <- recipes_score %>%
       filter(Title == title) %>%
       select(Score)
-    
-    print(Score)
   
   } else {
   
@@ -310,7 +308,6 @@ get_table <- function(foodlink){
     
     title_id <- data.frame(Title = title, Score)
     dbWriteTable(db, "recipes_scores", title_id, append = T)
-    print(Score)
   }
 }
 
