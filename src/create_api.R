@@ -12,7 +12,7 @@
 
 #* @get /get_score
 #* @param foodlink
-#* @response print Score
+#* @response print result
 
 get_table <- function(foodlink){
   
@@ -304,9 +304,9 @@ get_table <- function(foodlink){
       }
     })
     
-    Score <- (sum(as.numeric(ing_name$CO2_Calculated), na.rm=TRUE))
+    result <- (sum(as.numeric(ing_name$CO2_Calculated), na.rm=TRUE))
     
-    title_id <- data.frame(Title = title, Score)
+    title_id <- data.frame(Title = title, Score = result)
     dbWriteTable(db, "recipes_scores", title_id, append = T)
   }
 }
