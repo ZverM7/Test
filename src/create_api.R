@@ -12,7 +12,7 @@
 
 #* @get /get_score
 #* @param foodlink
-#* @response print result
+#* @response print Score
 
 get_table <- function(foodlink){
   
