@@ -308,6 +308,8 @@ get_table <- function(foodlink){
     
     title_id <- data.frame(Title = title, Score = result)
     dbWriteTable(db, "recipes_scores", title_id, append = T)
+    
+    result <- (sum(as.numeric(ing_name$CO2_Calculated), na.rm=TRUE))
   }
 }
 
