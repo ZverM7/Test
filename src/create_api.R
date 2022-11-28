@@ -64,7 +64,7 @@ get_table <- function(foodlink){
       filter(Title == title) %>%
       select(Score)
     
-    result <- Score[2]
+    result <- Score[1][2]
   } else {
   
     #raw scrape - Quantity
