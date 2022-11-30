@@ -363,11 +363,19 @@ get_co2 <- function(dash_ing) {
   plurals_en <- data.table(dbReadTable(db, "plurals"))
   recipes_data <- data.table(dbReadTable(db, "recipes_data"))
   synonyms_data <- data.table(dbReadTable(db, "synonyms_data"))
+  vectors <- data.table(dbReadTable(db, "recipe_vectors"))
   
   learnmore <- emissions_data %>%
-    filter(ingredient == dash_ing)
+    filter(ingredient == dash_ing) %>%
+    select(ingredient, variety, certification, type, emissions) %>%
+    rename(Ingredient = ingredient) %>%
+    rename(Variety = variety) %>%
+    rename(Certification = certification) %>%
+    rename(Type = type) %>%
+    rename("CO2/Kg" = emissions)
   
 }
+
 
 
 ################################################################################################################################################
